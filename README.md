@@ -1,101 +1,96 @@
-# code-with-quarkus
+# TravelHub — API Backend
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+API centrale de **TravelHub**, plateforme de mise en relation entre voyageurs et agences de voyage, pensée pour le marché camerounais.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+> Projet de portfolio — Douala, Cameroun
 
-## Running the application in dev mode
+## À propos
 
-You can run your application in dev mode that enables live coding using:
+TravelHub digitalise la réservation de voyages : les agences publient leurs offres depuis un espace dédié, les voyageurs recherchent et réservent directement, et chaque réservation confirmée génère un carnet de voyage numérique (itinéraire, documents, statut).
 
-```shell script
+## Stack technique
+
+| Composant | Technologie |
+|---|---|
+| Framework | Quarkus (Java) |
+| ORM | Hibernate ORM avec Panache |
+| Base de données | PostgreSQL |
+| Migrations | Flyway |
+| Authentification | OpenID Connect (Keycloak) |
+| Documentation API | SmallRye OpenAPI |
+
+## Modules fonctionnels
+
+- **Users** — comptes, rôles (voyageur / agence / admin), authentification
+- **Agencies** — profils d'agences, statut de validation par l'administrateur
+- **Agency Branches** — branches/succursales d'une agence, chacune publiant ses propres offres
+- **Offers** — offres de voyage publiées par les branches, réservables directement
+- **Bookings** — réservations directes d'une offre
+- **Itineraries** — carnet de voyage lié à une réservation confirmée
+- **Itinerary Steps** — étapes chronologiques du voyage
+- **Documents** — billets, vouchers, factures liés au voyage
+- **Reviews** — avis des voyageurs sur les agences
+- **Notifications** — événements clés (réservation confirmée, offre publiée...)
+
+## Prérequis
+
+- JDK 17+
+- Maven (ou le wrapper `./mvnw` fourni)
+- PostgreSQL (local ou Docker)
+- Keycloak (pour l'authentification OIDC)
+
+## Installation
+
+```bash
+git clone https://github.com/TON_USERNAME/travelhub-backend.git
+cd travelhub-backend
+```
+
+## Configuration
+
+Copie les variables d'environnement nécessaires (voir `application.yaml`) :
+
+```bash
+export DB_USERNAME=postgres
+export DB_PASSWORD=postgres
+export DB_URL=jdbc:postgresql://localhost:5432/travelhub
+```
+
+## Lancer le projet en développement
+
+```bash
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+L'API démarre par défaut sur `http://localhost:8080`.
+Dev UI disponible sur `http://localhost:8080/q/dev/`.
 
-## Packaging and running the application
+## Migrations de base de données
 
-The application can be packaged using:
+Les migrations sont gérées par Flyway, dans `src/main/resources/db/migration/`.
+Elles s'exécutent automatiquement au démarrage (`migrate-at-start: true`).
 
-```shell script
+## Build pour la production
+
+```bash
 ./mvnw package
+java -jar target/quarkus-app/quarkus-run.jar
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+## Architecture
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+Le backend suit une approche modulaire, avec une séparation claire entre entités du domaine et couche d'accès aux données via **Panache**, dans la continuité des choix d'architecture appliqués sur les autres projets (Tontine, Zeradon).
 
-If you want to build an _über-jar_, execute the following command:
+## Périmètre (MVP)
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
+- Inscription / authentification par rôle
+- Publication et recherche d'offres, gérées par branche d'agence
+- Réservation directe d'une offre publiée
+- Carnet de voyage : étapes, documents, statut
+- Dashboard agence : offres, réservations par branche
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+**Hors périmètre (V2)** : paiement en ligne (Mobile Money), messagerie temps réel, génération d'itinéraires par IA, facturation comptable.
 
-## Creating a native executable
+## Auteur
 
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- REST ([guide](https://quarkus.io/guides/rest)): Build RESTful web services and APIs using Jakarta REST (formerly JAX-RS)
-- Hibernate Validator ([guide](https://quarkus.io/guides/validation)): Bean validation using Hibernate Validator and Jakarta Validation annotations
-- SmallRye OpenAPI ([guide](https://quarkus.io/guides/openapi-swaggerui)): Generate OpenAPI schemas and serve Swagger UI for REST API documentation
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- Mapstruct ([guide](https://docs.quarkiverse.io/mapstruct/dev/)): MapStruct: Code generator for Java bean mappings using convention over configuration.
-- OpenID Connect ([guide](https://quarkus.io/guides/security-openid-connect)): Secure applications with OpenID Connect and OAuth 2.0 using bearer tokens and authorization code flow
-- YAML Configuration ([guide](https://quarkus.io/guides/config-yaml)): Use YAML to configure your Quarkus application
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplified JPA/Hibernate data access layer with active record and repository patterns
-- SmallRye JWT ([guide](https://quarkus.io/guides/security-jwt)): Secure your applications with JSON Web Token
-- SmallRye Health ([guide](https://quarkus.io/guides/smallrye-health)): Monitor service health
-- Cache ([guide](https://quarkus.io/guides/cache)): Enable application data caching in CDI beans
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
-
-## Provided Code
-
-### YAML Config
-
-Configure your application with YAML
-
-[Related guide section...](https://quarkus.io/guides/config-reference#configuration-examples)
-
-The Quarkus application configuration is located in `src/main/resources/application.yml`.
-
-### Hibernate ORM
-
-Create your first JPA entity
-
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
-
-
-[Related Hibernate with Panache section...](https://quarkus.io/guides/hibernate-orm-panache)
-
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-
-### SmallRye Health
-
-Monitor your application's health using SmallRye Health
-
-[Related guide section...](https://quarkus.io/guides/smallrye-health)
+Yvan — Douala, Cameroun
