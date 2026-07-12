@@ -1,0 +1,20 @@
+greeting:
+  message: "hello"
+
+quarkus:
+  datasource:
+    db-kind: postgresql
+    username: postgres
+    password: postgres
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/Travelhub_db
+
+  flyway:
+    migrate-at-start: true
+    baseline-on-migrate: true
+
+  hibernate-orm:
+    database:
+      generation: update
+    log:
+      sql: true
