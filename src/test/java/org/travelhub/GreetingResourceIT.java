@@ -1,4 +1,4 @@
-package org.acme;
+package org.travelhub;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
