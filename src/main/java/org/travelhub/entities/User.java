@@ -19,11 +19,11 @@ public class User extends PanacheEntityBase {
     @UuidGenerator
     public UUID id;
 
+    @Column(name = "keycloak_id", unique = true)
+    public String keycloakId;
+
     @Column(nullable = false, unique = true)
     public String email;
-
-    @Column(name = "password_hash", nullable = false)
-    public String passwordHash;
 
     @Column(name = "full_name", nullable = false)
     public String fullName;
@@ -34,6 +34,10 @@ public class User extends PanacheEntityBase {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, columnDefinition = "user_role")
     public UserRole role = UserRole.traveler;
+
+    @ManyToOne
+    @JoinColumn(name = "agency_branch_id")
+    public AgencyBranch agencyBranch;
 
     @Column(name = "is_active", nullable = false)
     public boolean isActive = true;
@@ -57,6 +61,6 @@ public class User extends PanacheEntityBase {
     public List<Notification> notifications;
 
     public enum UserRole {
-        traveler, agency, admin
+        traveler, agency_admin, branch_admin, admin
     }
 }

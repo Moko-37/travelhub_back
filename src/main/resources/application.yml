@@ -15,6 +15,28 @@ quarkus:
 
   hibernate-orm:
     database:
-      generation: update
+      generation: none
     log:
       sql: true
+
+  oidc:
+    auth-server-url: http://localhost:8081/realms/travelhub
+    client-id: travelhub-backend
+    application-type: service
+    tls:
+      verification: none
+    credentials:
+      secret: ${KEYCLOAK_CLIENT_SECRET}
+  http:
+    auth:
+      permission:
+        authenticated:
+          paths: /api/*
+          policy: authenticated
+
+  keycloak:
+    devservices:
+      enabled: false
+    admin:
+      server-url: http://localhost:8081
+      realm: travelhub
